@@ -859,18 +859,15 @@ def main():
             tk_root = tk.Tk()
             tk_root.withdraw()
             file_selection = filedialog.askopenfilenames(
-                title="Выберите один или несколько файлов SEG-Y",
+                title="Выберите файл SEG-Y из нужного каталога (будет обработан весь каталог)",
                 filetypes=[("SEG-Y files", "*.sgy *.segy *.SGY *.SEGY"), ("All files", "*.*")]
             )
             tk_root.destroy()
             if not file_selection:
                 print("Файлы не выбраны. Выход.")
                 return
-            # Use parent directory of first selected file as working dir
+            # Process the entire directory of the first selected file
             root = os.path.dirname(file_selection[0])
-            # Process only selected files (not entire directory)
-            files = [f for f in file_selection if os.path.splitext(f)[1].lower() in (".sgy", ".segy")]
-            selected_mode = True
         except ImportError:
             print("tkinter not available, use: segy2journal.py <directory>")
             return
@@ -879,8 +876,8 @@ def main():
         if not os.path.isdir(root):
             print(f"Error: directory not found: {root}")
             sys.exit(1)
-        files = scan_directory(root, recursive=args.recursive)
-        selected_mode = False
+
+    files = scan_directory(root, recursive=args.recursive)
 
     total = len(files)
     print(f"Каталог: {root}")
